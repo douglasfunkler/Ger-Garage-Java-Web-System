@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorator="DefaultLayout">
+
+<head>
+<title>Bookings Search</title>
+</head>
+
+<section layout:fragment="content">
+	<div layout:include="GeneralMessage"></div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<div class="clearfix">
+				<h1 class="panel-title aw-booking-panel">Bookings Search</h1>
+				<a class="btn btn-link aw-link-panel" th:href="@{/bookings/new}">New
+					Booking</a>
+			</div>
+		</div>
+
+		<div class="panel-body">
+			<form method="GET" class="form-horizontal" th:action="@{/bookings}"
+				th:object="${filter}">
+				<div class="form-group">
+					<div class="col-sm-4">
+						<div class="input-group">
+							<input class="form-control"
+								placeholder="Press Enter to list all or type to search something specific"
+								autofocus="autofocus" th:field="*{name}"></input> <span
+								class="input-group-btn">
+								<button type="submit" class="btn btn-default">
+									<i class="glyphicon glyphicon-search"></i>
+								</button>
+							</span>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th class="text-center col-md-1">#</th>
+							<th class="text-center col-md-2">Name</th>
+							<th class="text-center col-md-1">Phone</th>
+							<th class="text-center col-md-1">Date</th>
+							<th class="text-center col-md-1">Service</th>
+							<th class="text-center col-md-1">Price</th>
+							<th class="text-center col-md-2">Comments</th>
+							<th class="text-center col-md-1">Progress</th>
+							<th class="text-center col-md-1">Status</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="booking : ${bookings}">
+							<td class="text-center" th:text="${booking.code}"></td>
+							<td class="text-center" th:text="${booking.name}"></td>
+							<td class="text-center" th:text="${booking.phone}"></td>
+							<td class="text-center" th:text="${{booking.date}}"></td>
+							<td class="text-center" th:text="${booking.bookingType}"></td>
+							<td class="text-center" th:text="|€ ${{booking.price}}|"></td>
+							<td class="text-center" th:text="${booking.comments}"></td>
+							<td class="text-center" th:attr="data-role=${booking.code}">
+								<span class="label" th:text="${booking.status.description}"
+								th:classappend="${booking.pending ? 'label-danger' : 'label-success'}"></span>
+							</td>
+
+							<td class="text-center"><a class="btn btn-link btn-xs"
+								th:href="@{/bookings/{code}(code=${booking.code})}" title="Edit"
+								rel="tooltip" data-placement="top"> <span
+									class="glyphicon glyphicon-pencil"></span>
+							</a> <a class="btn btn-link btn-xs" data-toggle="modal"
+								data-target="#deletionConfirmationModal"
+								th:attr="data-code=${booking.code}, data-description=${booking.name}"
+								title="Delete" rel="tooltip" data-placement="top"> <span
+									class="glyphicon glyphicon-remove"></span>
+							</a> <a class="btn btn-link btn-xs js-update-status"
+								th:if="${booking.status}" title="Finish" rel="tooltip"
+								data-placement="top" th:attr="data-code=${booking.code}"
+								th:href="@{/bookings/{code}/receive(code=${booking.code})}">
+									<span class="glyphicon glyphicon-check"></span>
+							</a></td>
+						</tr>
+						<tr>
+							<td colspan="9" th:if="${#lists.isEmpty(bookings)}">No
+								booking was found</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div th:replace="DeletionConfirmationDialogue"></div>
+
+	</div>
+</section>
+</html>
